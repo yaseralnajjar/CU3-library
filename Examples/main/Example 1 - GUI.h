@@ -85,10 +85,7 @@ int main_wingui{
 	GUISetState(CU3_SW_ENABLE); // Enable GUI
 	
 
-	GUIWait(3000);
-
-
-	ww2 // Wait until user exit
+	GUIWait(); // Wait until user exit
 	return 0;
 }
 
