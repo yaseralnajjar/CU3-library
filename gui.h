@@ -2,7 +2,20 @@
 #include <chrono>
 
 
+#if defined _M_IX86
+	#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_IA64
+	#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#elif defined _M_X64
+	#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#else
+	#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+#endif
+
+
+
 #define CU3_DEFAULT_GUI_STYLE WS_MINIMIZEBOX | WS_CAPTION | WS_POPUP | WS_SYSMENU
+
 
 #define CU3_SW_SHOW SW_SHOW // Show window
 #define CU3_SW_HIDE SW_HIDE // Hide window
@@ -22,6 +35,9 @@
 #define CU3_SW_SHOWNORMAL SW_SHOWNORMAL // Activates and displays a window
 
 
+
+#define CU3_DEFAULT_BUTTON_STYLE WS_TABSTOP | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON
+#define CU3_DEFAULT_BUTTON_EXSTYLE WS_EX_WINDOWEDGE
 
 LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -130,6 +146,16 @@ int GUISetState(int iFlag = SW_SHOW, HWND hwndWinhandle = NULL) {
 
 	return 1; //													NO ERROR 1
 }
+
+
+HWND GUICtrlCreateButton(char sText[], int iLeft,int iTop,int iWidth,int iHeight, DWORD dwStyle = -1, DWORD dwExStyle = -1) {
+	if (dwStyle == -1) dwStyle = CU3_DEFAULT_BUTTON_STYLE;
+	if (dwExStyle == -1) dwExStyle = CU3_DEFAULT_BUTTON_EXSTYLE;
+	return CreateWindowEx(dwExStyle,"BUTTON",sText,dwStyle,iLeft,iTop,iWidth,iHeight,hwndLastCreatedGUI,NULL,
+				  (HINSTANCE)GetWindowLong(hwndLastCreatedGUI, GWL_HINSTANCE),NULL);
+}
+
+
 
 
 
