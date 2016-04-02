@@ -46,7 +46,9 @@ SOFTWARE.
 //Enter into the namespace of the CU3 Library
 using namespace CU3_Library;
 
+
 HWND hwnd;
+HWND hwndButton;
 
 int main_wingui{
 
@@ -57,8 +59,13 @@ int main_wingui{
 	InitializeRootGUI("gui_root_name"); // Initialize the subsystem gui with the root name.
 	 
 	pp "Creating GUI" ee
-	hwnd = GUICreate("My test GUI",800,600); // Create simple GUI
+	hwnd = GUICreate("My test GUI",600,600,-1,-1); // Create simple GUI
 	
+	
+	pp "Creating button" ee
+	hwndButton = GUICtrlCreateButton("Some button", 100, 100, 100, 100); // Create button
+
+
 	pp "Show GUI" ee
 	GUISetState(CU3_SW_SHOW); // Show the GUI
 	
@@ -86,6 +93,8 @@ int main_wingui{
 	
 
 	GUIWait(); // Wait until user exit
+
+
 	return 0;
 }
 
