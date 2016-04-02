@@ -173,17 +173,6 @@ int GUISetBkColor(COLORREF colorrefBackground, HWND hwndWinhandle = NULL) {
 }
 
 
-
-bool GUISetBkColor_old(COLORREF colorrefBackground, HWND hwndWinhandle = NULL) {
-	if (!hwndWinhandle) hwndWinhandle = hwndLastCreatedGUI;
-	HDC hdcWin = GetDC(hwndWinhandle); if (!hdcWin) return false; // ERROR false
-	if (SetBkColor(hdcWin, colorrefBackground) == CLR_INVALID) return false;
-	ReleaseDC(hwndWinhandle, hdcWin);
-	return true; //													NO ERROR true
-}
-
-
-
 /*							C++ DEBUG FUNCTIONS								*/
 void GUIWait(unsigned int iMsTime = 0) {
 	MSG msg;
