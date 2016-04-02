@@ -156,6 +156,31 @@ HWND GUICtrlCreateButton(char sText[], int iLeft,int iTop,int iWidth,int iHeight
 }
 
 
+int GUISetBkColor(COLORREF colorrefBackground, HWND hwndWinhandle = NULL) {
+	if (!hwndWinhandle) hwndWinhandle = hwndLastCreatedGUI;
+	
+
+	if (!SetClassLong(hwndWinhandle, GCL_HBRBACKGROUND,
+		(LONG)CreateSolidBrush(RGB(GetBValue(colorrefBackground),
+		GetGValue(colorrefBackground), 
+		GetRValue(colorrefBackground)))))
+		return -1; //												ERROR -1
+	
+	if (!RedrawWindow(hwndWinhandle, NULL, NULL, WM_ERASEBKGND | RDW_INVALIDATE))
+		return -2; //												ERROR -2
+
+	return 1; //													NO ERROR 1
+}
+
+
+
+bool GUISetBkColor_old(COLORREF colorrefBackground, HWND hwndWinhandle = NULL) {
+	if (!hwndWinhandle) hwndWinhandle = hwndLastCreatedGUI;
+	HDC hdcWin = GetDC(hwndWinhandle); if (!hdcWin) return false; // ERROR false
+	if (SetBkColor(hdcWin, colorrefBackground) == CLR_INVALID) return false;
+	ReleaseDC(hwndWinhandle, hdcWin);
+	return true; //													NO ERROR true
+}
 
 
 
