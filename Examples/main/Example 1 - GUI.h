@@ -38,7 +38,7 @@ SOFTWARE.
 
 
 #include "CU3_Library\gui.h"
-
+#include "CU3_Library\ColorConstants.h"
 
 
 
@@ -49,7 +49,7 @@ using namespace CU3_Library;
 
 HWND hwnd;
 HWND hwndButton;
-
+#define WaitTime 1250
 int main_wingui{
 
 	
@@ -70,27 +70,41 @@ int main_wingui{
 	GUISetState(CU3_SW_SHOW); // Show the GUI
 	
 
-	GUIWait(3000); // Wait 3000 ms
+	
+	GUIWait(WaitTime);
 
 
 	pp "Hide GUI" ee
 	GUISetState(CU3_SW_HIDE); // Hide the GUI
 
-	GUIWait(3000); // Wait 3000 ms
+	GUIWait(WaitTime); 
 	
 	pp "Show GUI" ee
 	GUISetState(CU3_SW_SHOW); // Show the GUI
 
-	GUIWait(3000); // Wait 3000 ms
+	GUIWait(WaitTime);
 
 	pp "Disable GUI" ee
 	GUISetState(CU3_SW_DISABLE); // Disable GUI
 
-	GUIWait(3000); // Wait 3000 ms
+	GUIWait(WaitTime);
 
 	pp "Enable GUI" ee
 	GUISetState(CU3_SW_ENABLE); // Enable GUI
+
+	pp "Set BkColor to blue" ee
+	GUISetBkColor(CU3_COLOR_BLUE); // Set BkColor to blue
+
+	GUIWait(WaitTime);
+
+	pp "Set BkColor to green" ee
+	GUISetBkColor(CU3_COLOR_GREEN); // Set BkColor to green
 	
+	GUIWait(WaitTime);
+	
+	pp "Set BkColor to yellow" ee
+	GUISetBkColor(CU3_COLOR_YELLOW); // Set BkColor to yellow
+
 
 	GUIWait(); // Wait until user exit
 
