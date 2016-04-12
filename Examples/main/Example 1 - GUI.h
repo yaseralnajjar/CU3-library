@@ -27,6 +27,8 @@ SOFTWARE.
 
 
 #include <windows.h> // You also mut to include the windows.h before core.h
+//#include <WinUser.h>
+
 #include "CU3_Library\core.h" // You must to always include this core.h file once before including any file in CU3_Library
 
 
@@ -36,8 +38,9 @@ SOFTWARE.
 
 
 
-
+//#include "CU3_Library\gui_64.h"
 #include "CU3_Library\gui.h"
+
 #include "CU3_Library\ColorConstants.h"
 
 
@@ -50,13 +53,15 @@ using namespace CU3_Library;
 HWND hwnd;
 HWND hwndButton;
 #define WaitTime 1250
-int main_wingui{
+int main(){
 
-	
+
 	InitConsole(); // Create the standard console
+	
+
 
 	// Must call it before using any functions
-	InitializeRootGUI("gui_root_name"); // Initialize the subsystem gui with the root name.
+	GUISetDefaultWindowClass("gui_root_name"); // Initialize the subsystem gui with the root name.
 	 
 	pp "Creating GUI" ee
 	hwnd = GUICreate("My test GUI",600,600,-1,-1); // Create simple GUI
@@ -65,11 +70,13 @@ int main_wingui{
 	pp "Creating button" ee
 	hwndButton = GUICtrlCreateButton("Some button", 100, 100, 100, 100); // Create button
 
+	
+	GUISetBkColor(CU3_COLOR_BLUE); // Set BkColor to blue
+	GUICtrlCreateLabel("abcdefg", 10, 10, 60, 60);
 
 	pp "Show GUI" ee
 	GUISetState(CU3_SW_SHOW); // Show the GUI
 	
-
 	
 	GUIWait(WaitTime);
 
