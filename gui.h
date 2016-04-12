@@ -2,16 +2,25 @@
 #include <chrono>
 
 
-#if defined _M_IX86
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#elif defined _M_IA64
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#elif defined _M_X64
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#else
-#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
-#endif
+/* To remove the modern style (so it will look like windows 98), write the line:
+	#undef CU3_MODERN_GUI_STYLE
+	Before #include <gui.h>
 
+*/
+
+#define CU3_MODERN_GUI_STYLE
+
+#if defined CU3_MODERN_GUI_STYLE
+	#if defined _M_IX86
+	#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='x86' publicKeyToken='6595b64144ccf1df' language='*'\"")
+	#elif defined _M_IA64
+	#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='ia64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+	#elif defined _M_X64
+	#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='amd64' publicKeyToken='6595b64144ccf1df' language='*'\"")
+	#else
+	#pragma comment(linker,"/manifestdependency:\"type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
+	#endif
+#endif
 
 
 #define CU3_DEFAULT_GUI_STYLE WS_MINIMIZEBOX | WS_CAPTION | WS_POPUP | WS_SYSMENU
@@ -51,43 +60,71 @@ LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 CU3_NAMESPACE_START
 
+
+
+
 namespace CU3WINGUI {
-	WNDCLASSEX wcRootwin;
+	WNDCLASSEX wcWinClassDefault;
+	WNDCLASSEX* ptr_wcWinClass = &wcWinClassDefault;
 	HWND hwndLastCreatedGUI = NULL;
 }
 
 
 
 /*							FOR_INITIALIZATION (required only in C++)						*/
-int InitializeRootGUI(char parm_charRootName[], HINSTANCE parm_hInstance = NULL) {
+int GUISetDefaultWindowClass(char parm_charRootName[] = "CU3L_GUI", HINSTANCE parm_hInstance = NULL) {
 	using namespace CU3WINGUI;
-
+	
 	if (!parm_hInstance) {
 		parm_hInstance = GetModuleHandle(NULL);
 		if (!parm_hInstance) return -1; //							ERROR -1
 	}
 
 
-	wcRootwin.cbSize = sizeof(WNDCLASSEX);
-	wcRootwin.style = 0;
-	wcRootwin.lpfnWndProc = WndProc;
-	wcRootwin.cbClsExtra = 0;
-	wcRootwin.cbWndExtra = 0;
-	wcRootwin.hInstance = parm_hInstance;
-	wcRootwin.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wcRootwin.hCursor = LoadCursor(NULL, IDC_ARROW);
-	wcRootwin.hbrBackground = (HBRUSH)(COLOR_BTNSHADOW);
-	wcRootwin.lpszMenuName = NULL;
-	wcRootwin.lpszClassName = parm_charRootName;
-	wcRootwin.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
+	wcWinClassDefault.cbSize = sizeof(WNDCLASSEX);
+	wcWinClassDefault.style = 0;
+	wcWinClassDefault.lpfnWndProc = WndProc;
+	wcWinClassDefault.cbClsExtra = 0;
+	wcWinClassDefault.cbWndExtra = 0;
+	wcWinClassDefault.hInstance = parm_hInstance;
+	wcWinClassDefault.hIcon = LoadIcon(NULL, IDI_APPLICATION);
+	wcWinClassDefault.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wcWinClassDefault.hbrBackground = (HBRUSH)(COLOR_BTNSHADOW);
+	wcWinClassDefault.lpszMenuName = NULL;
+	wcWinClassDefault.lpszClassName = parm_charRootName;
+	wcWinClassDefault.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 
-	if (!RegisterClassEx(&wcRootwin)) return -2; //					ERROR -2
+	if (!RegisterClassEx(&wcWinClassDefault)) return -2; //					ERROR -2
 
 	return 1; //													NO ERROR 1
 }
+
+
+
+
+/*
+	Use GUISelectWindowClass(&CU3WINGUI::wcRootwinDefault) with bRegisterClass = false to re-select the default class.
+	If you select the default class, you first must to call to GUISetDefaultWindowClass *only once*.
+	Then at any time you want to reselect the class, just call to this function in this way.
+	Before this you must call once to GUISetDefaultWindowClass (If you need to use the default class)
+
+	About non-default To select new Class, At first time that you use the class and if the class was not registered with
+	RegisterClassEx, you must to call to this function with bRegisterClass = true *only once*
+	(you register the class only once with bRegisterClass = true, then you may use this function to select the class
+	again (If you are working with more then one class))
+
+	The function returns the old class on success. On fail it return >0.
+*/
+WNDCLASSEX* GUISelectWindowClass(WNDCLASSEX* ptr_wndclassexNew,bool bRegisterClass = false) {
+	if (bRegisterClass && !RegisterClassEx(ptr_wndclassexNew)) return NULL; //				ERROR -1
+	WNDCLASSEX* ptr_wndclassexOld = CU3WINGUI::ptr_wcWinClass;
+	CU3WINGUI::ptr_wcWinClass = ptr_wndclassexNew;
+	return ptr_wndclassexOld;
+}
+
 int InitializeRootGUIEx(WNDCLASSEX *parm_rootwin_wc) {
 	if (!RegisterClassEx(parm_rootwin_wc)) return -1; //				ERROR -1
-	CU3WINGUI::wcRootwin = *parm_rootwin_wc;
+	CU3WINGUI::ptr_wcWinClass = parm_rootwin_wc;
 }
 HINSTANCE GethInstance() {
 	return GetModuleHandle(NULL);
@@ -95,7 +132,7 @@ HINSTANCE GethInstance() {
 
 
 /*						      AUTOIT GUI FUNCTIONS							*/
-HWND GUICreate(char sTitle[], int iWidth = -1, int iHeight = -1, int iLeft = -1, int iTop = -1, DWORD dwStyle = -1, DWORD dwExStyle = NULL, HWND hwndParent = NULL) {
+HWND GUICreate(char sTitle[], int iWidth = -1, int iHeight = -1, int iLeft = -1, int iTop = -1, DWORD dwStyle = -1, DWORD dwExStyle = -1, HWND hwndParent = NULL) {
 	using namespace CU3WINGUI;
 	if (iWidth == -1) iWidth = 400; if (iHeight == -1) iHeight = 400;
 
@@ -108,12 +145,14 @@ HWND GUICreate(char sTitle[], int iWidth = -1, int iHeight = -1, int iLeft = -1,
 	}
 
 
-	if (dwStyle == -1) dwStyle = CU3_DEFAULT_GUI_STYLE;
+	if (dwStyle == -1) dwStyle = WS_MINIMIZEBOX | WS_CAPTION | WS_POPUP | WS_SYSMENU;//CU3_DEFAULT_GUI_STYLE;
 
-	HWND hGUI = CreateWindowEx(dwExStyle, wcRootwin.lpszClassName, sTitle, dwStyle, iLeft, iTop, iWidth, iHeight, hwndParent, NULL, wcRootwin.hInstance, NULL);
+	if (dwExStyle == -1) dwExStyle = NULL;
+
+	HWND hGUI = CreateWindowEx(dwExStyle, ptr_wcWinClass->lpszClassName, sTitle, dwStyle, iLeft, iTop, iWidth, iHeight, hwndParent, NULL, ptr_wcWinClass->hInstance, NULL);
 
 	if (!hGUI) return NULL; //									ERROR NULL
-
+	
 	hwndLastCreatedGUI = hGUI;
 	return hGUI; //												NO ERROR HWND
 }
