@@ -45,9 +45,20 @@ SOFTWARE.
 
 
 
+
 #define CU3_NAMESPACE CU3_Library
 #define CU3 CU3_NAMESPACE
 
 #define CU3_NAMESPACE_START namespace CU3_NAMESPACE {
 #define CU3_NAMESPACE_END }
+
+
+
+
+#define CU3_DEFAULT -1
+
+
+
+
+
 
