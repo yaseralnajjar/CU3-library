@@ -26,5 +26,8 @@
     <ClInclude Include="Example 1 - GUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Example 2 - GUI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
